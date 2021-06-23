@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { Subject } from "rxjs";
 import { Post } from "./post.model";
 
 @Injectable({
@@ -7,14 +8,20 @@ import { Post } from "./post.model";
 
 export class PostsService {
   private posts: Post[] = []; //reference type
+  private postUpdated = new Subject<Post[]>();
 
   getPosts() {
-    return this.posts;
+    return [...this.posts];
+  }
+
+  getPostUpdateListener() {
+    return this.postUpdated.asObservable();
   }
 
   // depenency injection
   addPost(title: string, content: string){
     const post: Post = {title: title, content: content};
     this.posts.push(post);
+    this.postUpdated.next([...this.posts]);
   }
 }
